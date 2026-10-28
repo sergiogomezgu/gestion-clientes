@@ -1,0 +1,20 @@
+{
+  "name": "gestion-clientes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aplicacion sencilla para gestionar clientes, facturas e historial.",
+  "scripts": {
+    "start": "node src/server.js",
+    "import:csv": "node src/import-cli.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "csv-parse": "6.1.0",
+    "express": "5.1.0",
+    "pg": "8.16.3"
+  }
+}

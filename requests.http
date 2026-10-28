@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:3000
+@token = pega-aqui-tu-API_TOKEN
+@user = Tu nombre
+@clientId = 1
+
+### Comprobar que la aplicación responde
+GET {{baseUrl}}/api/health
+
+### Ver la lista de clientes
+GET {{baseUrl}}/api/clientes?page=1&limit=10
+Authorization: Bearer {{token}}
+X-User: {{user}}
+
+### Ver la ficha de un cliente
+GET {{baseUrl}}/api/clientes/{{clientId}}
+Authorization: Bearer {{token}}
+X-User: {{user}}
+
+### Ver el historial de un cliente
+GET {{baseUrl}}/api/clientes/{{clientId}}/historico
+Authorization: Bearer {{token}}
+X-User: {{user}}

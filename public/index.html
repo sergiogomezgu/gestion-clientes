@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="Gestión sencilla de clientes, contactos, facturas e historial.">
+    <title>Clientes | RAS</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Inicio, gestión de clientes">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Gestión de clientes</span>
+      </a>
+      <div class="session-area">
+        <span id="session-name" class="session-name"></span>
+        <button id="logout-button" class="button button-quiet" type="button" hidden>
+          Cerrar sesión
+        </button>
+      </div>
+    </header>
+
+    <main class="page">
+      <section id="login-panel" class="login-panel" aria-labelledby="login-title">
+        <div class="login-copy">
+          <p class="eyebrow">Acceso privado</p>
+          <h1 id="login-title">Tus clientes, en un solo lugar.</h1>
+          <p>Introduce el token configurado para esta instalación para consultar o editar datos.</p>
+        </div>
+        <form id="login-form" class="login-form">
+          <label>
+            Token de acceso
+            <input id="token-input" name="token" type="password" autocomplete="current-password"
+              minlength="32" required>
+          </label>
+          <label>
+            Tu nombre
+            <input id="actor-input" name="actor" type="text" maxlength="80"
+              autocomplete="name" required>
+          </label>
+          <button class="button button-primary" type="submit">Entrar</button>
+          <p id="login-message" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="app-panel" hidden aria-labelledby="page-title">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Panel de trabajo</p>
+            <h1 id="page-title">Clientes</h1>
+            <p class="muted">Busca, filtra y consulta la actividad de cada cliente.</p>
+          </div>
+          <button id="create-button" class="button button-primary" type="button">
+            <span aria-hidden="true">＋</span> Nuevo cliente
+          </button>
+        </div>
+
+        <form id="filters-form" class="filter-panel">
+          <label class="search-field">
+            Buscar
+            <input id="search-input" name="q" type="search"
+              placeholder="Empresa, CIF, contacto o email">
+          </label>
+          <label>
+            Estado
+            <select id="status-filter" name="estado">
+              <option value="">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </label>
+          <label>
+            País
+            <input id="country-filter" name="pais" type="text" placeholder="Cualquier país">
+          </label>
+          <label>
+            Comercial
+            <input id="commercial-filter" name="comercial" type="text" placeholder="Cualquier comercial">
+          </label>
+          <div class="filter-actions">
+            <button class="button button-secondary" type="submit">Aplicar filtros</button>
+            <button id="clear-filters" class="button button-quiet" type="button">Limpiar</button>
+          </div>
+        </form>
+
+        <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+        <section class="table-card" aria-label="Listado de clientes">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Empresa</th>
+                  <th scope="col">Contactos</th>
+                  <th scope="col">Ciudad</th>
+                  <th scope="col">Comercial</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Facturación (base)</th>
+                  <th scope="col"><span class="sr-only">Acciones</span></th>
+                </tr>
+              </thead>
+              <tbody id="client-rows"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="result-count" class="muted"></span>
+            <nav class="pagination" aria-label="Paginación">
+              <button id="previous-page" class="button button-quiet" type="button">Anterior</button>
+              <span id="page-label" aria-live="polite"></span>
+              <button id="next-page" class="button button-quiet" type="button">Siguiente</button>
+            </nav>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="client-dialog" class="dialog">
+      <form id="client-form" class="dialog-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Ficha de cliente</p>
+            <h2 id="client-dialog-title">Nuevo cliente</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="client-dialog"
+            aria-label="Cerrar">×</button>
+        </div>
+        <div class="form-grid">
+          <label class="wide-field">Empresa *
+            <input name="company" required maxlength="160">
+          </label>
+          <label>CIF *
+            <input name="cif" required maxlength="32">
+          </label>
+          <label>Estado
+            <select name="status">
+              <option>Activo</option>
+              <option>Inactivo</option>
+            </select>
+          </label>
+          <label class="wide-field">Dirección
+            <input name="address" maxlength="200">
+          </label>
+          <label>Código postal
+            <input name="postalCode" maxlength="20">
+          </label>
+          <label>Ciudad
+            <input name="city" maxlength="100">
+          </label>
+          <label>País
+            <input name="country" maxlength="100">
+          </label>
+          <label>Comercial
+            <input name="commercial" maxlength="120">
+          </label>
+          <label>Fecha de alta
+            <input name="registeredAt" type="date">
+          </label>
+        </div>
+        <p id="client-form-message" class="form-message" role="status" aria-live="polite"></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close="client-dialog">Cancelar</button>
+          <button class="button button-primary" type="submit">Guardar cliente</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="contact-dialog" class="dialog">
+      <form id="contact-form" class="dialog-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Personas de contacto</p>
+            <h2 id="contact-dialog-title">Añadir contacto</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="contact-dialog"
+            aria-label="Cerrar">×</button>
+        </div>
+        <div class="form-grid">
+          <label class="wide-field">Nombre *
+            <input name="name" required maxlength="120">
+          </label>
+          <label class="wide-field">Correo electrónico
+            <input name="email" type="email" maxlength="254">
+          </label>
+          <label class="wide-field">Teléfono
+            <input name="phone" type="tel" maxlength="40">
+          </label>
+        </div>
+        <p id="contact-form-message" class="form-message" role="status" aria-live="polite"></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close="contact-dialog">Cancelar</button>
+          <button class="button button-primary" type="submit">Guardar contacto</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="detail-dialog" class="dialog dialog-wide">
+      <section class="dialog-form" aria-labelledby="detail-title">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Resumen y actividad</p>
+            <h2 id="detail-title">Cliente</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="detail-dialog"
+            aria-label="Cerrar">×</button>
+        </div>
+        <div id="detail-content"></div>
+        <p id="detail-message" class="form-message" role="status" aria-live="polite"></p>
+      </section>
+    </dialog>
+
+    <footer class="page-footer">
+      Datos de ejemplo para una instalación local. Las cantidades mostradas como facturación no incluyen IVA.
+    </footer>
+  </body>
+</html>
